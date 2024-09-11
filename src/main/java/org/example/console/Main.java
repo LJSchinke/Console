@@ -4,7 +4,6 @@ import java.util.*;
 
 public class Main {
 
-    // Store questions and corresponding answers
     public static Map<String, List<String>> questionAnswerMap = new HashMap<>();
 
     public static void main(String[] args) {
@@ -79,7 +78,6 @@ public class Main {
             return;
         }
 
-        // Check if the question already exists
         if (questionAnswerMap.containsKey(question)) {
             System.out.println("This question already exists in the system.");
             System.out.println("Would you like to add new unique answers to this question? (yes/no)");
@@ -105,7 +103,6 @@ public class Main {
                 System.out.println("No answers were added.");
             }
         } else {
-            // Add question and answers to the map
             questionAnswerMap.put(question, newAnswers);
             System.out.println("Question and answers added successfully!");
         }
