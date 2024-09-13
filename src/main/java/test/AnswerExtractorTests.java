@@ -1,13 +1,14 @@
 package test;
 
-import java.util.*;
-
 import org.junit.Test;
 
-import static org.example.console.Main.extractAnswers;
-import static org.junit.jupiter.api.Assertions.*;
+import java.util.List;
 
-public class QuestionAnswerTest {
+import static org.example.console.AnswerExtractor.extractAnswers;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
+public class AnswerExtractorTests {
 
     @Test
     public void testExtractAnswers_MultipleAnswers() {
@@ -52,5 +53,4 @@ public class QuestionAnswerTest {
         // Assert
         assertEquals(0, result.size());
     }
-
 }
