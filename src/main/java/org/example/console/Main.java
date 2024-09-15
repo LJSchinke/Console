@@ -1,5 +1,10 @@
 package org.example.console;
 
+import org.example.console.exceptions.InvalidAnswerFormatException;
+import org.example.console.exceptions.InvalidQuestionFormatException;
+import org.example.console.exceptions.InvalidQuestionLengthException;
+import org.example.console.exceptions.MissingAnswerException;
+
 import java.util.*;
 
 public class Main {
@@ -69,57 +74,40 @@ public class Main {
 
         String input = scanner.nextLine();
 
-        int separatorIndex = input.indexOf("?");
-        if (separatorIndex == -1) {
-            System.out.println("Invalid format. Make sure the question ends with a '?'.");
-            return;
-        }
-
-        String question = input.substring(0, separatorIndex+1).trim();
-        if (question.length() > 255) {
-            System.out.println("Question exceeds the 255 character limit.");
-            return;
-        }
-
-        String answersPart = input.substring(separatorIndex + 1).trim();
-        if (answersPart.isEmpty()) {
-            System.out.println("You need to provide at least one answer.");
-            return;
-        }
-
-        List<String> newAnswers = AnswerExtractor.extractAnswers(answersPart);
-        if (newAnswers.isEmpty()) {
-            System.out.println("Invalid format. Answers should be enclosed in quotes.");
-            return;
-        }
-
-        if (QASystem.containsQuestion(question)) {
-            System.out.println("This question already exists in the system.");
-            System.out.println("Would you like to add new unique answers to this question? (yes/no)");
-            String response = scanner.nextLine();
-
-            if (response.equalsIgnoreCase("yes")) {
-                List<String> existingAnswers = QASystem.getAnswersToQuestion(question);
-                int addedAnswersCount = 0;
-
-                for (String answer : newAnswers) {
-                    if (!existingAnswers.contains(answer)) {
-                        existingAnswers.add(answer);
-                        addedAnswersCount++;
-                    }
-                }
-
-                if (addedAnswersCount > 0) {
-                    System.out.println(addedAnswersCount + " new unique answer(s) added to the question.");
-                } else {
-                    System.out.println("All provided answers are already associated with this question.");
-                }
+        try{
+            Map<String, List<String>> processedInput = QASystem.processInputToQuestionAndAnswer(input);
+            String question = processedInput.keySet().toArray()[0].toString();
+            if (QASystem.containsQuestion(question)) {
+                addNewAnswersToQuestion(scanner, question, processedInput.get(question));
             } else {
-                System.out.println("No answers were added.");
+                QASystem.addQuestionAndAnswer(question, processedInput.get(question));
+                System.out.println("Question and answers added successfully!");
+            }
+
+        }
+        catch (InvalidAnswerFormatException
+               | MissingAnswerException
+               | InvalidQuestionLengthException
+               | InvalidQuestionFormatException e
+        ) {
+            System.out.println(e.getMessage());
+        }
+    }
+
+    private static void addNewAnswersToQuestion(Scanner scanner, String question, List<String> newAnswers) {
+        System.out.println("This question already exists in the system.");
+        System.out.println("Would you like to add new unique answers to this question? (yes/no)");
+        String response = scanner.nextLine();
+
+        if (response.equalsIgnoreCase("yes")) {
+            int addedAnswers = QASystem.addNewAnswersToQuestion(question, newAnswers);
+            if (addedAnswers > 0) {
+                System.out.println(addedAnswers + " new unique answer(s) added to the question.");
+            } else {
+                System.out.println("All provided answers are already associated with this question.");
             }
         } else {
-            QASystem.addQuestionAndAnswer(question, newAnswers);
-            System.out.println("Question and answers added successfully!");
+            System.out.println("No answers were added.");
         }
     }
 
