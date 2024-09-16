@@ -1,15 +1,12 @@
 package org.example.console;
 
-import org.example.console.exceptions.InvalidAnswerFormatException;
-import org.example.console.exceptions.InvalidQuestionFormatException;
-import org.example.console.exceptions.InvalidQuestionLengthException;
-import org.example.console.exceptions.MissingAnswerException;
+import org.example.console.exceptions.*;
 
 import java.util.*;
 
 public class Main {
 
-    public static QuestionAnswerSystem QASystem = new QuestionAnswerSystem();
+    public static QuestionAnswerSystem QASystem = new QuestionAnswerSystem(null);
 
     public static void main(String[] args) {
         Scanner scanner = new Scanner(System.in);
@@ -19,7 +16,7 @@ public class Main {
             System.out.println("1 Ask a question");
             System.out.println("2 Add a question and its answers");
             System.out.println("3 List of questions");
-            System.out.println("4 Reset Questions");
+            System.out.println("4 Reset questions");
             System.out.println("5 Exit");
             System.out.println("? Help");
 
@@ -83,12 +80,12 @@ public class Main {
                 QASystem.addQuestionAndAnswer(question, processedInput.get(question));
                 System.out.println("Question and answers added successfully!");
             }
-
         }
         catch (InvalidAnswerFormatException
                | MissingAnswerException
                | InvalidQuestionLengthException
-               | InvalidQuestionFormatException e
+               | InvalidQuestionFormatException
+               | InvalidAnswerLengthException e
         ) {
             System.out.println(e.getMessage());
         }

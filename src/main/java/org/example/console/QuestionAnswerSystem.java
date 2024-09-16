@@ -1,21 +1,19 @@
 package org.example.console;
 
-import org.example.console.exceptions.InvalidAnswerFormatException;
-import org.example.console.exceptions.InvalidQuestionFormatException;
-import org.example.console.exceptions.InvalidQuestionLengthException;
-import org.example.console.exceptions.MissingAnswerException;
+import org.example.console.exceptions.*;
 
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 
 public class QuestionAnswerSystem {
 
-    public HashMap<String, List<String>> QuestionAnswerMap; //AccessModifier changed for UnitTesting
+    private HashMap<String, List<String>> QuestionAnswerMap;
 
-    public QuestionAnswerSystem(){
-        QuestionAnswerMap=new HashMap<String, List<String>>();
+    public QuestionAnswerSystem(Map<String, List<String>> initializeWith){
+        if (initializeWith==null){
+            QuestionAnswerMap=new HashMap<>();
+        }else{
+            QuestionAnswerMap=new HashMap<>(initializeWith);
+        }
     }
 
     public boolean containsQuestion(String question){
@@ -28,7 +26,13 @@ public class QuestionAnswerSystem {
         return QuestionAnswerMap.get(question);
     }
 
-    public Map<String, List<String>> processInputToQuestionAndAnswer(String input)throws InvalidAnswerFormatException, MissingAnswerException, InvalidQuestionLengthException, InvalidQuestionFormatException {
+    public Map<String, List<String>> processInputToQuestionAndAnswer(String input)
+            throws
+            InvalidAnswerFormatException,
+            MissingAnswerException,
+            InvalidQuestionLengthException,
+            InvalidQuestionFormatException,
+            InvalidAnswerLengthException {
         int separatorIndex = input.indexOf("?");
         if (separatorIndex==-1){
             throw new InvalidQuestionFormatException();
@@ -49,6 +53,12 @@ public class QuestionAnswerSystem {
             throw new InvalidAnswerFormatException();
         }
 
+        for(String answer : answers){
+            if (answer.length() > 255){
+                throw new InvalidAnswerLengthException();
+            }
+        }
+
         return Map.of(question, answers);
     }
 
@@ -58,7 +68,9 @@ public class QuestionAnswerSystem {
     }
 
     public int addNewAnswersToQuestion(String question, List<String> newAnswers){
-        List<String> existingAnswers = getAnswersToQuestion(question);
+
+        ArrayList<String> existingAnswers = new ArrayList<>();
+        getAnswersToQuestion(question).forEach(answer -> existingAnswers.add(answer));
         int addedAnswersCount = 0;
 
         for (String answer : newAnswers) {
